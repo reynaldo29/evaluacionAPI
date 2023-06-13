@@ -38,6 +38,64 @@ namespace APIDemo2.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("APIDemo2.Models.Customer", b =>
+                {
+                    b.Property<int>("CustomerID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerID"), 1L, 1);
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CustomerID");
+
+                    b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("APIDemo2.Models.Detail", b =>
+                {
+                    b.Property<int>("DetailID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DetailID"), 1L, 1);
+
+                    b.Property<int>("InvoiceID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductID")
+                        .HasColumnType("int");
+
+                    b.HasKey("DetailID");
+
+                    b.HasIndex("InvoiceID");
+
+                    b.HasIndex("ProductID");
+
+                    b.ToTable("Details");
+                });
+
+            modelBuilder.Entity("APIDemo2.Models.Invoice", b =>
+                {
+                    b.Property<int>("InvoiceID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceID"), 1L, 1);
+
+                    b.Property<int>("CustomerID")
+                        .HasColumnType("int");
+
+                    b.HasKey("InvoiceID");
+
+                    b.HasIndex("CustomerID");
+
+                    b.ToTable("Invoices");
+                });
+
             modelBuilder.Entity("APIDemo2.Models.Person", b =>
                 {
                     b.Property<int>("PersonID")
@@ -84,6 +142,36 @@ namespace APIDemo2.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("APIDemo2.Models.Detail", b =>
+                {
+                    b.HasOne("APIDemo2.Models.Invoice", "Invoice")
+                        .WithMany("Details")
+                        .HasForeignKey("InvoiceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APIDemo2.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("APIDemo2.Models.Invoice", b =>
+                {
+                    b.HasOne("APIDemo2.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("APIDemo2.Models.Product", b =>
                 {
                     b.HasOne("APIDemo2.Models.Category", "Category")
@@ -93,6 +181,11 @@ namespace APIDemo2.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("APIDemo2.Models.Invoice", b =>
+                {
+                    b.Navigation("Details");
                 });
 #pragma warning restore 612, 618
         }
